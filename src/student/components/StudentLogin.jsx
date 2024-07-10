@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+// src/components/StudentLogin.js
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn } from "../auth";
 
 const StudentLogin = () => {
   const [formData, setFormData] = useState({
-    studentRefNumber: "",
+    email: "",
     password: "",
   });
 
@@ -21,28 +21,29 @@ const StudentLogin = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!/^\d{8}$/.test(formData.studentRefNumber)) {
-      errors.studentRefNumber =
-        "Student Reference Number must be exactly 8 digits.";
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email address is invalid.";
+    }
+    if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(
+        formData.password
+      )
+    ) {
+      errors.password =
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character.";
     }
     return errors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      try {
-        await signIn(
-          formData.studentRefNumber + "@example.com",
-          formData.password
-        );
-        navigate("/dashboard");
-      } catch (error) {
-        setErrors({ form: error.message });
-      }
+      // Handle sign-in logic here
+      navigate("/dashboard");
     }
   };
 
@@ -53,27 +54,25 @@ const StudentLogin = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
-              htmlFor="studentRefNumber"
+              htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Student Reference Number
+              Email
             </label>
             <input
-              id="studentRefNumber"
-              name="studentRefNumber"
-              type="text"
+              id="email"
+              name="email"
+              type="email"
               required
-              value={formData.studentRefNumber}
+              value={formData.email}
               onChange={handleChange}
-              placeholder="12345678"
+              placeholder="john.doe@example.com"
               className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.studentRefNumber ? "border-red-500" : ""
+                errors.email ? "border-red-500" : ""
               }`}
             />
-            {errors.studentRefNumber && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.studentRefNumber}
-              </p>
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
           <div>
@@ -107,10 +106,15 @@ const StudentLogin = () => {
               Login
             </button>
           </div>
-          {errors.form && (
-            <p className="mt-1 text-sm text-red-600">{errors.form}</p>
-          )}
         </form>
+        <p className="text-sm text-center text-gray-600">
+          <Link
+            to="/forgot-password"
+            className="text-indigo-600 hover:text-indigo-500"
+          >
+            Forgot Password?
+          </Link>
+        </p>
         <p className="text-sm text-center text-gray-600">
           Don&apos;t have an account?{" "}
           <Link

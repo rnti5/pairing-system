@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+// src/components/StudentRegistration.js
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signUp } from "../auth";
 
 const StudentRegistration = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     studentRefNumber: "",
+    email: "",
     skills: "",
     desiredProjectField: "",
     password: "",
@@ -31,6 +32,9 @@ const StudentRegistration = () => {
       errors.studentRefNumber =
         "Student Reference Number must be exactly 8 digits.";
     }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email address is invalid.";
+    }
     if (
       !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(
         formData.password
@@ -42,18 +46,16 @@ const StudentRegistration = () => {
     return errors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      try {
-        await signUp(formData);
-        navigate("/dashboard");
-      } catch (error) {
-        setErrors({ form: error.message });
-      }
+      // Handle form submission logic here
+      console.log(formData);
+      // Assuming successful registration, navigate to the dashboard
+      navigate("/dashboard");
     }
   };
 
@@ -108,6 +110,29 @@ const StudentRegistration = () => {
               <p className="mt-1 text-sm text-red-600">
                 {errors.studentRefNumber}
               </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john.doe@example.com"
+              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.email ? "border-red-500" : ""
+              }`}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
           <div>
@@ -189,9 +214,6 @@ const StudentRegistration = () => {
               Register
             </button>
           </div>
-          {errors.form && (
-            <p className="mt-1 text-sm text-red-600">{errors.form}</p>
-          )}
         </form>
         <p className="text-sm text-center text-gray-600">
           Already have an account?{" "}
