@@ -59,7 +59,7 @@ const LecturerSignIn = () => {
     e.preventDefault();
     // Simulate form submission and successful sign-in
     // In a real app, you would handle the authentication process here
-    navigate("/dashboard");
+    navigate("/lecturer-dashboard");
   };
 
   return (

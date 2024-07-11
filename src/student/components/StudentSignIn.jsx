@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const StudentLogin = () => {
+const StudentSignIn = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,7 +43,7 @@ const StudentLogin = () => {
       setErrors(validationErrors);
     } else {
       // Handle sign-in logic here
-      navigate("/dashboard");
+      navigate("/student-dashboard");
     }
   };
 
@@ -129,4 +129,4 @@ const StudentLogin = () => {
   );
 };
 
-export default StudentLogin;
+export default StudentSignIn;

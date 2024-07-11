@@ -1,9 +1,6 @@
 // src/components/StudentDashboard.js
 import { useState } from "react";
-import { Link, useNavigate, Routes, Route } from "react-router-dom";
-import ChatBox from "./ChatBox";
-import GanttChart from "./GanttChart";
-import MeetingScheduler from "./MeetingScheduler";
+import { Link, useNavigate } from "react-router-dom";
 
 const StudentDashboard = () => {
   const [student, setStudent] = useState({
@@ -13,16 +10,27 @@ const StudentDashboard = () => {
     peers: ["Jane Doe", "Mark Johnson", "Emily Davis"],
   });
 
-  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const navigate = useNavigate();
 
   const handleAvatarChange = (e) => {
-    // Implement avatar change logic here
     setStudent((prev) => ({
       ...prev,
       avatar: URL.createObjectURL(e.target.files[0]),
     }));
+  };
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() !== "") {
+      setChatMessages([
+        ...chatMessages,
+        { sender: student.name, message: newMessage },
+      ]);
+      setNewMessage("");
+    }
   };
 
   return (
@@ -38,9 +46,9 @@ const StudentDashboard = () => {
               <li className="mt-4">
                 <button
                   className="text-white hover:text-gray-300"
-                  onClick={() => setShowChat(true)}
+                  onClick={() => setIsChatOpen(!isChatOpen)}
                 >
-                  Chat
+                  {isChatOpen ? "Close Chat" : "Open Chat"}
                 </button>
               </li>
               <li className="mt-4">
@@ -112,36 +120,42 @@ const StudentDashboard = () => {
             <span>Welcome, {student.name}</span>
           </div>
         </div>
-
-        <Routes>
-          <Route path="/gantt-chart" element={<GanttChart />} />
-          <Route path="/schedule" element={<MeetingScheduler />} />
-          {/* Add more routes as needed */}
-        </Routes>
-
-        <div className="flex justify-end items-end mb-4">
-          <div className="w-1/4 bg-white p-4 rounded shadow-md">
-            <h3 className="text-xl font-semibold">
-              Supervisor: {student.supervisor}
-            </h3>
-            <h4 className="text-lg font-medium">Peers:</h4>
-            <ul className="list-disc list-inside">
-              {student.peers.map((peer, index) => (
-                <li key={index}>{peer}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </div>
 
-      {showChat && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-md w-1/2">
+      {/* Floating Chat Window */}
+      {isChatOpen && (
+        <div className="fixed bottom-0 right-0 m-4 w-96 bg-white border border-gray-300 rounded shadow-lg">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-700">Chat</h2>
             <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              onClick={() => setShowChat(false)}
-            ></button>
-            <ChatBox />
+              onClick={() => setIsChatOpen(false)}
+              className="text-red-500"
+            >
+              Close
+            </button>
+          </div>
+          <div className="p-4 h-64 overflow-y-auto">
+            {chatMessages.map((msg, index) => (
+              <div key={index} className="mb-2">
+                <strong>{msg.sender}: </strong>
+                <span>{msg.message}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex p-4 border-t border-gray-200">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="flex-grow p-2 border border-gray-300 rounded-l"
+              placeholder="Type a message..."
+            />
+            <button
+              onClick={handleSendMessage}
+              className="bg-blue-600 text-white p-2 rounded-r"
+            >
+              Send
+            </button>
           </div>
         </div>
       )}

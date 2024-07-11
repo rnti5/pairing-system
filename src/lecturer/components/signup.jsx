@@ -151,7 +151,7 @@ const LecturerSignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Save the data and navigate to the dashboard
-    navigate("/dashboard", { state: { name: formData.name } });
+    navigate("/lecturer-dashboard", { state: { name: formData.name } });
   };
 
   return (

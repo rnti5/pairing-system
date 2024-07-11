@@ -55,7 +55,7 @@ const StudentRegistration = () => {
       // Handle form submission logic here
       console.log(formData);
       // Assuming successful registration, navigate to the dashboard
-      navigate("/dashboard");
+      navigate("/student-dashboard");
     }
   };
 
