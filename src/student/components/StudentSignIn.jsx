@@ -1,6 +1,7 @@
-// src/components/StudentLogin.js
+// src/components/StudentSignIn.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const StudentSignIn = () => {
   const [formData, setFormData] = useState({
@@ -25,25 +26,30 @@ const StudentSignIn = () => {
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = "Email address is invalid.";
     }
-    if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(
-        formData.password
-      )
-    ) {
-      errors.password =
-        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character.";
+    if (!formData.password) {
+      errors.password = "Password is required.";
     }
+
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      // Handle sign-in logic here
-      navigate("/student-dashboard");
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/auth/student-login",
+          formData
+        );
+        console.log(response.data); // Handle the response as needed
+        navigate("/student-dashboard");
+      } catch (error) {
+        console.error("Error during login:", error);
+        setErrors({ form: "Invalid login credentials." });
+      }
     }
   };
 
@@ -52,6 +58,7 @@ const StudentSignIn = () => {
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
         <h2 className="text-2xl font-bold text-center">Student Login</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}
           <div>
             <label
               htmlFor="email"
@@ -118,7 +125,7 @@ const StudentSignIn = () => {
         <p className="text-sm text-center text-gray-600">
           Don&apos;t have an account?{" "}
           <Link
-            to="/register"
+            to="/student-register"
             className="text-indigo-600 hover:text-indigo-500"
           >
             Register here

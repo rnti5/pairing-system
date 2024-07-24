@@ -1,6 +1,7 @@
 // src/components/StudentRegistration.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const StudentRegistration = () => {
   const [formData, setFormData] = useState({
@@ -46,16 +47,29 @@ const StudentRegistration = () => {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      // Handle form submission logic here
-      console.log(formData);
-      // Assuming successful registration, navigate to the dashboard
-      navigate("/student-dashboard");
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/auth/register/student",
+          formData
+        );
+
+        if (res.data.token) {
+          // Save the token and navigate to the dashboard
+          localStorage.setItem("token", res.data.token);
+          navigate("/student-dashboard");
+        } else {
+          // Handle registration errors
+          console.log(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 

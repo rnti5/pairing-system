@@ -1,6 +1,7 @@
-
+// src/components/LecturerSignIn.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LecturerSignIn = () => {
   const [formData, setFormData] = useState({
@@ -8,64 +9,130 @@ const LecturerSignIn = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const errors = {};
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email address is invalid.";
+    }
+    if (!formData.password) {
+      errors.password = "Password is required.";
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission and successful sign-in
-    // In a real app, you would handle the authentication process here
-    navigate("/lecturer-dashboard");
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/auth/lecturer-login",
+          formData
+        );
+        console.log(response.data); // Handle the response as needed
+        navigate("/lecturer-dashboard");
+      } catch (error) {
+        console.error("Error during login:", error);
+        setErrors({ form: "Invalid login credentials." });
+      }
+    }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto p-6 bg-white rounded shadow-md mt-10"
-    >
-      <h2 className="text-2xl text-blue-600 mb-6">Sign In</h2>
-      <label className="block text-gray-700 mb-2">Email:</label>
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-        required
-      />
-      <label className="block text-gray-700 mb-2">Password:</label>
-      <input
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-        required
-      />
-      <button
-        type="submit"
-        className="bg-blue-600 text-white p-2 w-full rounded"
-      >
-        Sign In
-      </button>
-      <div className="flex justify-between mt-4 text-gray-700">
-        <p>
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-blue-600">
-            Sign Up
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
+        <h2 className="text-2xl font-bold text-center">Lecturer Login</h2>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john.doe@example.com"
+              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.email ? "border-red-500" : ""
+              }`}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="********"
+              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.password ? "border-red-500" : ""
+              }`}
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+            )}
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+        <p className="text-sm text-center text-gray-600">
+          <Link
+            to="/forgot-password"
+            className="text-indigo-600 hover:text-indigo-500"
+          >
+            Forgot Password?
           </Link>
         </p>
-        <Link to="/forgot-password" className="text-blue-600">
-          Forgot Password?{" "}
-        </Link>
+        <p className="text-sm text-center text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link
+            to="/lecturer-signup"
+            className="text-indigo-600 hover:text-indigo-500"
+          >
+            Register here
+          </Link>
+        </p>
       </div>
-    </form>
+    </div>
   );
 };
 

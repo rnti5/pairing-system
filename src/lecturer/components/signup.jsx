@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LecturerSignUp = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +13,7 @@ const LecturerSignUp = () => {
     programmingLanguages: "",
   });
 
+  const [setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,10 +24,53 @@ const LecturerSignUp = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.fullName) {
+      errors.name = "Full Name is required.";
+    }
+    if (!/^\d{8}$/.test(formData.studentRefNumber)) {
+      errors.referenceNumber =
+        "Student Reference Number must be exactly 8 digits.";
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Email address is invalid.";
+    }
+    if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(
+        formData.password
+      )
+    ) {
+      errors.password =
+        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character.";
+    }
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save the data and navigate to the dashboard
-    navigate("/lecturer-dashboard", { state: { name: formData.name } });
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/auth/register/lecturer",
+          formData
+        );
+
+        if (res.data.token) {
+          // Save the token and navigate to the dashboard
+          localStorage.setItem("token", res.data.token);
+          navigate("/student-dashboard");
+        } else {
+          // Handle registration errors
+          console.log(res.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
   };
 
   return (

@@ -1,52 +1,120 @@
-// src/components/LandingPage.js
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { FaGraduationCap, FaChalkboardTeacher } from "react-icons/fa";
 
-import { Link } from "react-router-dom";
+const Container = styled.div`
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Header = styled.div`
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Logo = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Main = styled.div`
+  margin-top: 32px;
+  text-align: center;
+`;
+
+const CardsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 32px;
+`;
+
+const Card = styled.div`
+  background-color: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px; /* Widen the card */
+  text-align: center;
+`;
+
+const Icon = styled.div`
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #4caf50;
+  display: flex;
+  justify-content: center;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 16px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
+const Heading = styled.h2`
+  margin: 20px 0;
+  font-weight: bold;
+`;
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <header className="w-full bg-black text-white p-4 flex justify-between items-center">
-        <img src="path/to/your/logo.png" alt="Logo" className="h-10" />
-        <nav>
-          <Link to="/" className="text-white hover:text-gray-300">
-            Home
-          </Link>
-        </nav>
-      </header>
-
-      <main className="flex flex-col items-center text-center mt-12">
-        <h1 className="text-4xl font-bold mb-6">
-          Welcome to Project Pairing Apps Portal
-        </h1>
-        <p className="text-lg mb-8">Please select any of the sections below</p>
-
-        <div className="flex space-x-6">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Students</h2>
-            <p className="mb-4">
-              Enter this section to access the students&apos; portal.
-            </p>
-            <Link
-              to="/student-signin"
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-            >
+    <Container>
+      <Header>
+        <Logo>
+          <img
+            src="/path-to-knust-logo.png"
+            alt="KNUST Logo"
+            style={{ height: "40px", marginRight: "8px" }}
+          />
+        </Logo>
+        <StyledButton onClick={() => navigate("/")}>Home</StyledButton>
+      </Header>
+      <Main>
+        <h1>Welcome to Project Pairing Apps Portal</h1>
+        <h3>Please select any of the sections below</h3>
+        <CardsContainer>
+          <Card>
+            <Icon>
+              <FaGraduationCap />
+            </Icon>
+            <Heading>Students</Heading>
+            <p>Enter this section to access the students&apos; portal.</p>
+            <StyledButton onClick={() => navigate("/student-signin")}>
               Go &gt;&gt;
-            </Link>
-          </div>
-
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Lecturer</h2>
-            <p className="mb-4">This section is exclusively for Lecturers.</p>
-            <Link
-              to="lecturer-signin"
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-            >
+            </StyledButton>
+          </Card>
+          <Card>
+            <Icon>
+              <FaChalkboardTeacher />
+            </Icon>
+            <Heading>Lecturer</Heading>
+            <p>This section is exclusively for Lecturer&apos;s.</p>
+            <StyledButton onClick={() => navigate("/lecturer-signin")}>
               Go &gt;&gt;
-            </Link>
-          </div>
-        </div>
-      </main>
-    </div>
+            </StyledButton>
+          </Card>
+        </CardsContainer>
+      </Main>
+    </Container>
   );
 };
 
