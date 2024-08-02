@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import UserProfile from "../../components/UserProfile";
 
 const LecturerDashboard = () => {
   const [lecturer, setLecturer] = useState({
@@ -9,6 +11,7 @@ const LecturerDashboard = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Dashboard component mounted");
@@ -26,26 +29,34 @@ const LecturerDashboard = () => {
     }
   };
 
+  const handleAvatarChange = (newAvatar) => {
+    setLecturer((prevLecturer) => ({
+      ...prevLecturer,
+      picture: newAvatar,
+    }));
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <div className="w-64 bg-white p-6 shadow-md flex flex-col">
-        <div className="flex items-center mb-8">
-          <img
-            src={lecturer.picture}
-            alt="Lecturer"
-            className="w-16 h-16 rounded-full mr-4 border-2 border-gray-300"
-          />
-          <h1 className="text-2xl font-bold text-blue-600">{lecturer.name}</h1>
-        </div>
-        <nav className="space-y-4">
+        <UserProfile
+          avatar={lecturer.picture}
+          onAvatarChange={handleAvatarChange}
+          userName={lecturer.name}
+          role="Lecturer"
+        />
+        <nav className="space-y-4 mt-8">
           <button className="w-full text-left text-gray-700 p-2 rounded hover:bg-blue-100">
             Home
           </button>
           <button className="w-full text-left text-gray-700 p-2 rounded hover:bg-blue-100">
             Settings
           </button>
-          <button className="w-full text-left text-gray-700 p-2 rounded hover:bg-blue-100">
+          <button
+            className="w-full text-left text-gray-700 p-2 rounded hover:bg-blue-100"
+            onClick={() => navigate("/logout")}
+          >
             Logout
           </button>
         </nav>

@@ -1,3 +1,5 @@
+//
+
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaGraduationCap, FaChalkboardTeacher } from "react-icons/fa";
@@ -107,7 +109,7 @@ const LandingPage = () => {
               <FaChalkboardTeacher />
             </Icon>
             <Heading>Lecturer</Heading>
-            <p>This section is exclusively for Lecturer&apos;s.</p>
+            <p>This section is exclusively for Lecturers.</p>
             <StyledButton onClick={() => navigate("/lecturer-signin")}>
               Go &gt;&gt;
             </StyledButton>

@@ -5,14 +5,13 @@ import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const StudentRegistration = () => {
+const LecturerRegistration = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    studentRefNumber: "",
+    name: "",
     email: "",
-    password: "",
-    skills: "",
+    researchArea: "",
     desiredProjectField: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -29,12 +28,8 @@ const StudentRegistration = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.fullName) {
-      errors.fullName = "Full Name is required.";
-    }
-    if (!/^\d{8}$/.test(formData.studentRefNumber)) {
-      errors.studentRefNumber =
-        "Student Reference Number must be exactly 8 digits.";
+    if (!formData.name) {
+      errors.name = "Name is required.";
     }
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = "Email address is invalid.";
@@ -65,16 +60,15 @@ const StudentRegistration = () => {
         const user = userCredential.user;
 
         // Save user data to Firestore
-        await addDoc(collection(db, "students"), {
+        await addDoc(collection(db, "lecturers"), {
           uid: user.uid,
-          fullName: formData.fullName,
+          name: formData.name,
           email: formData.email,
-          studentRefNumber: formData.studentRefNumber,
-          skills: formData.skills,
+          researchArea: formData.researchArea,
           desiredProjectField: formData.desiredProjectField,
         });
 
-        navigate("/student-dashboard");
+        navigate("/lecturer-dashboard");
       } catch (error) {
         console.error("Error during registration:", error);
         setErrors({ form: "Failed to register. Please try again." });
@@ -85,55 +79,32 @@ const StudentRegistration = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center">Student Registration</h2>
+        <h2 className="text-2xl font-bold text-center">
+          Lecturer Registration
+        </h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}
           <div>
             <label
-              htmlFor="fullName"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Full Name
+              Name
             </label>
             <input
-              id="fullName"
-              name="fullName"
+              id="name"
+              name="name"
               type="text"
               required
-              value={formData.fullName}
+              value={formData.name}
               onChange={handleChange}
               placeholder="John Doe"
               className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.fullName ? "border-red-500" : ""
+                errors.name ? "border-red-500" : ""
               }`}
             />
-            {errors.fullName && (
-              <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="studentRefNumber"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Student Reference Number
-            </label>
-            <input
-              id="studentRefNumber"
-              name="studentRefNumber"
-              type="text"
-              required
-              value={formData.studentRefNumber}
-              onChange={handleChange}
-              placeholder="12345678"
-              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.studentRefNumber ? "border-red-500" : ""
-              }`}
-            />
-            {errors.studentRefNumber && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.studentRefNumber}
-              </p>
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
             )}
           </div>
           <div>
@@ -157,6 +128,54 @@ const StudentRegistration = () => {
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="researchArea"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Research Area/Interest
+            </label>
+            <input
+              id="researchArea"
+              name="researchArea"
+              type="text"
+              required
+              value={formData.researchArea}
+              onChange={handleChange}
+              placeholder="e.g., Machine Learning, Cybersecurity"
+              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.researchArea ? "border-red-500" : ""
+              }`}
+            />
+            {errors.researchArea && (
+              <p className="mt-1 text-sm text-red-600">{errors.researchArea}</p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="desiredProjectField"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Desired Project Field
+            </label>
+            <input
+              id="desiredProjectField"
+              name="desiredProjectField"
+              type="text"
+              required
+              value={formData.desiredProjectField}
+              onChange={handleChange}
+              placeholder="e.g., IoT, Machine Learning, AI, Cybersecurity"
+              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+                errors.desiredProjectField ? "border-red-500" : ""
+              }`}
+            />
+            {errors.desiredProjectField && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.desiredProjectField}
+              </p>
             )}
           </div>
           <div className="relative">
@@ -190,55 +209,6 @@ const StudentRegistration = () => {
             )}
           </div>
           <div>
-            <label
-              htmlFor="skills"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Skills
-            </label>
-            <input
-              id="skills"
-              name="skills"
-              type="text"
-              required
-              value={formData.skills}
-              onChange={handleChange}
-              placeholder="e.g., Python, JavaScript, React"
-              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.skills ? "border-red-500" : ""
-              }`}
-            />
-            {errors.skills && (
-              <p className="mt-1 text-sm text-red-600">{errors.skills}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="desiredProjectField"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Desired Project Field
-            </label>
-            <input
-              id="desiredProjectField"
-              name="desiredProjectField"
-              type="text"
-              required
-              value={formData.desiredProjectField}
-              onChange={handleChange}
-              placeholder="e.g., IoT, Machine Learning, AI, Cybersecurity"
-              className={`w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.desiredProjectField ? "border-red-500" : ""
-              }`}
-            />
-            {errors.desiredProjectField && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.desiredProjectField}
-              </p>
-            )}
-          </div>
-
-          <div>
             <button
               type="submit"
               className="w-full px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -250,10 +220,10 @@ const StudentRegistration = () => {
         <p className="text-sm text-center text-gray-600">
           Already have an account?{" "}
           <Link
-            to="/student-signin"
+            to="/lecturer-signin"
             className="text-indigo-600 hover:text-indigo-500"
           >
-            Login here
+            Sign In
           </Link>
         </p>
       </div>
@@ -261,4 +231,4 @@ const StudentRegistration = () => {
   );
 };
 
-export default StudentRegistration;
+export default LecturerRegistration;

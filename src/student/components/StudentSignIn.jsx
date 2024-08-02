@@ -1,7 +1,8 @@
-// src/components/StudentSignIn.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const StudentSignIn = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const StudentSignIn = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -40,11 +42,11 @@ const StudentSignIn = () => {
       setErrors(validationErrors);
     } else {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/student-login",
-          formData
+        await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
         );
-        console.log(response.data); // Handle the response as needed
         navigate("/student-dashboard");
       } catch (error) {
         console.error("Error during login:", error);
@@ -82,7 +84,7 @@ const StudentSignIn = () => {
               <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
-          <div>
+          <div className="relative">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
@@ -92,7 +94,7 @@ const StudentSignIn = () => {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={formData.password}
               onChange={handleChange}
@@ -101,6 +103,13 @@ const StudentSignIn = () => {
                 errors.password ? "border-red-500" : ""
               }`}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 px-3 py-2 text-gray-600"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}

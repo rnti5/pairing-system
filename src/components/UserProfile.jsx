@@ -1,13 +1,32 @@
-// src/components/UserProfile.js
+// src/components/UserProfile.jsx
 
+import { useState } from "react";
 import PropTypes from "prop-types";
 
-const UserProfile = ({ avatar, onAvatarChange }) => {
+const UserProfile = ({ avatar, onAvatarChange, userName, role }) => {
+  const [localAvatar, setLocalAvatar] = useState(avatar);
+  const [error, setError] = useState("");
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalAvatar(reader.result);
+        onAvatarChange(reader.result);
+      };
+      reader.onerror = () => {
+        setError("Error loading file. Please try again.");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="flex items-center space-x-4">
       <div className="relative">
         <img
-          src={avatar}
+          src={localAvatar}
           alt="User Avatar"
           className="w-10 h-10 rounded-full"
         />
@@ -34,10 +53,13 @@ const UserProfile = ({ avatar, onAvatarChange }) => {
           id="avatarUpload"
           type="file"
           className="hidden"
-          onChange={onAvatarChange}
+          onChange={handleAvatarChange}
         />
       </div>
-      <span>Welcome, Student Name</span>
+      <span>
+        Welcome, {userName} ({role})
+      </span>
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 };
@@ -45,6 +67,8 @@ const UserProfile = ({ avatar, onAvatarChange }) => {
 UserProfile.propTypes = {
   avatar: PropTypes.string.isRequired,
   onAvatarChange: PropTypes.func.isRequired,
+  userName: PropTypes.string.isRequired,
+  role: PropTypes.string.isRequired,
 };
 
 export default UserProfile;
